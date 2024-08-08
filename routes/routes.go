@@ -8,8 +8,16 @@ import (
 	"github.com/thiaudiott/personalities-api/controllers"
 )
 
+const PORT = ":8080"
+
 func HandleRequests() {
+
+	log.Println("Creating router...")
 	r := mux.NewRouter()
-	r.HandleFunc("/", controllers.HelloWorld)
-	log.Fatal(http.ListenAndServe(":8080", r))
+
+	log.Println("Creating routes...")
+	r.HandleFunc("/", controllers.HelloWorld).Methods("GET")
+
+	log.Println("All done. Listening on port", PORT)
+	log.Fatal(http.ListenAndServe(PORT, r))
 }
