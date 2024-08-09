@@ -16,7 +16,8 @@ func HandleRequests() {
 	r := mux.NewRouter()
 
 	log.Println("Creating routes...")
-	r.HandleFunc("/", controllers.HelloWorld).Methods("GET")
+	r.HandleFunc("/", controllers.HelloWorld).Methods("GET") // test route
+	RegisterPersonalityRoutes(r)
 
 	log.Println("All done. Listening on port", PORT)
 	log.Fatal(http.ListenAndServe(PORT, r))
