@@ -7,4 +7,5 @@ import (
 
 func RegisterPersonalityRoutes(r *mux.Router) {
 	r.HandleFunc("/personalities", controllers.GetAllPersonalities).Methods("GET")
+	r.HandleFunc("/personalities/{id}", controllers.GetPersonality).Methods("GET")
 }
