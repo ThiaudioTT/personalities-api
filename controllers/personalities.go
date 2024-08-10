@@ -4,11 +4,35 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/thiaudiott/personalities-api/database"
 	"github.com/thiaudiott/personalities-api/models"
 )
+
+// POST - creates a new personality
+func CreatePersonality(w http.ResponseWriter, r *http.Request) {
+	var personality models.Personality
+
+	json.NewDecoder(r.Body).Decode(&personality)
+
+	result := database.DB.Create(&personality)
+	if result.Error != nil {
+		// Check for a duplicate key error by matching the error message
+		if strings.Contains(result.Error.Error(), "duplicate key value violates unique constraint") {
+			http.Error(w, "Personality already exists", http.StatusConflict)
+			return
+		}
+
+		http.Error(w, "Error creating personality", http.StatusInternalServerError)
+		return
+	}
+
+	// w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(personality)
+}
 
 // GET - returns all personalities
 func GetAllPersonalities(w http.ResponseWriter, r *http.Request) {
