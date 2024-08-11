@@ -53,6 +53,7 @@ func GetAllPersonalities(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// todo: limit the number of personalities returned
+	// create your own pagination like a gopher!
 	json.NewEncoder(w).Encode(personalities)
 }
 
