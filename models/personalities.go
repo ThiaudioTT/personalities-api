@@ -1,9 +1,21 @@
 package models
 
 type Personality struct {
-	Id   int    `json:"id"`
+	Id int `json:"id" validate:"number"`
+
+	// validate package is used to add validation rules to struct fields
+
+	Name string `json:"name" validate:"required"`
+	Bio  string `json:"bio" validate:"required"`
+}
+
+type CreatePersonality struct {
 	Name string `json:"name"`
 	Bio  string `json:"bio"`
+}
+
+func (p CreatePersonality) TableName() string {
+	return "personalities"
 }
 
 // GORM associates the Personality struct with the personalities table automatically

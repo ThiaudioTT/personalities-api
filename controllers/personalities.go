@@ -13,9 +13,15 @@ import (
 
 // POST - creates a new personality
 func CreatePersonality(w http.ResponseWriter, r *http.Request) {
-	var personality models.Personality
+	var personality models.CreatePersonality
 
 	json.NewDecoder(r.Body).Decode(&personality)
+
+	errJson := models.ValidateModel(personality)
+	if errJson != nil {
+		http.Error(w, errJson.Error(), http.StatusBadRequest)
+		return
+	}
 
 	result := database.DB.Create(&personality)
 	if result.Error != nil {
