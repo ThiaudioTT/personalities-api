@@ -9,6 +9,7 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/thiaudiott/personalities-api/database"
 	"github.com/thiaudiott/personalities-api/models"
+	"github.com/thiaudiott/personalities-api/utils"
 )
 
 // POST - creates a new personality
@@ -74,6 +75,47 @@ func GetPersonality(w http.ResponseWriter, r *http.Request) {
 
 	if personality.Id == 0 {
 		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+
+	json.NewEncoder(w).Encode(personality)
+}
+
+// PUT - Updates a personality
+func UpdatePersonality(w http.ResponseWriter, r *http.Request) {
+	var personality models.Personality
+
+	id, idErr := utils.GetIdFromUrl(r)
+
+	if idErr != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	database.DB.First(&personality, id)
+
+	if personality.Id == 0 {
+		http.Error(w, "Personality not found", http.StatusNotFound)
+		return
+	}
+
+	var updatedPersonality models.Personality
+
+	json.NewDecoder(r.Body).Decode(&updatedPersonality)
+
+	// todo: maybe a middleware to validate the model when
+	// the request is made
+	errJson := models.ValidateModel(updatedPersonality)
+	if errJson != nil {
+		http.Error(w, errJson.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// update the personality
+	updateRes := database.DB.Model(&personality).Updates(updatedPersonality)
+
+	if updateRes.Error != nil {
+		http.Error(w, "Error updating personality", http.StatusInternalServerError)
 		return
 	}
 
