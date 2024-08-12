@@ -121,3 +121,28 @@ func UpdatePersonality(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(personality)
 }
+
+func DeletePersonality(w http.ResponseWriter, r *http.Request) {
+	var personality models.Personality
+
+	id, idErr := utils.GetIdFromUrl(r)
+
+	if idErr != nil {
+		http.Error(w, "Invalid ID", http.StatusBadRequest)
+		return
+	}
+
+	database.DB.First(&personality, id)
+	if personality.Id == 0 {
+		http.Error(w, "Personality not found", http.StatusNotFound)
+		return
+	}
+
+	deleteRes := database.DB.Delete(&personality)
+	if deleteRes.Error != nil {
+		http.Error(w, "Error deleting personality", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}

@@ -1,5 +1,10 @@
 package models
 
+/**
+This model could be more imprved by adding date added and date excluded fields
+But since this is a simple project, I'll leave it as is.
+*/
+
 type Personality struct {
 	Id int `json:"id" validate:"number"`
 
